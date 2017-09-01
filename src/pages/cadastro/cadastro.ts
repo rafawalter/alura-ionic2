@@ -1,7 +1,10 @@
 import { Component } from "@angular/core";
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, AlertController, Alert } from 'ionic-angular';
 
 import { Carro } from "../../domain/carro/carro";
+import { HomePage } from "../home/home";
+import { Agendamento } from "../../domain/agendamento/agendamento";
+import { AgendamentoService } from "../../domain/agendamento/agendamento-service";
 
 @Component({
     selector: 'page-cadastro',
@@ -12,22 +15,51 @@ export class CadastroPage {
     public carro: Carro;
     public precoTotal: number;
 
-    public nome: string;
-    public endereco: string;
-    public email: string;
-    public data: string = new Date().toISOString();
+    public agendamento: Agendamento;
 
-    constructor(public navCtrl: NavController, public navParams: NavParams) {
+    private _alerta: Alert;
+
+    constructor(
+        public navCtrl: NavController, 
+        public navParams: NavParams,
+        private _service: AgendamentoService,
+        private _alertCtrl: AlertController
+    ) {
 
         this.carro = navParams.get('carro');
         this.precoTotal = navParams.get('precoTotal');
+
+        this.agendamento = new Agendamento(this.carro, this.precoTotal);
+
+        this._alerta = this._alertCtrl.create({
+            title: 'Aviso',
+            buttons: [{ text: 'OK', handler: () => navCtrl.setRoot(HomePage) }]
+        });
     }
 
     agenda() {
         
-        console.log(this.nome);
-        console.log(this.endereco);
-        console.log(this.email);
-        console.log(this.data);
+        if (!this.agendamento.nome || !this.agendamento.endereco || !this.agendamento.email) {
+
+            this._alertCtrl.create({
+                title: 'Preenchimento obrigatório',
+                subTitle: 'Você deve preencher todas as informações',
+                buttons: [{ text: 'Ok'}]
+            }).present();
+
+            return;
+        }
+
+        this._service
+            .agenda(this.agendamento)
+            .then(() => {
+                this._alerta.setSubTitle('Agendamento realizado com sucesso.');
+                this._alerta.present();
+            })
+            .catch(erro => {
+                console.log(erro);
+                this._alerta.setSubTitle('Não foi possível realizar o agendamento!');
+                this._alerta.present();
+            })
     }
 }
