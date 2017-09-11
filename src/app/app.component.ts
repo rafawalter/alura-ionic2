@@ -4,6 +4,8 @@ import { StatusBar, Splashscreen } from 'ionic-native';
 
 import { HomePage } from '../pages/home/home';
 import { AgendamentosPage } from '../pages/agendamentos/agendamentos';
+import { LoginPage } from "../pages/login/login";
+import { PerfilPage } from "../pages/perfil/perfil";
 
 
 @Component({
@@ -11,14 +13,15 @@ import { AgendamentosPage } from '../pages/agendamentos/agendamentos';
 })
 export class MyApp {
 
-  @ViewChild(Nav) public nav: Nav;
-
-  rootPage = HomePage;
+  rootPage = LoginPage;
 
   public paginas = [
-    {titulo: 'Agendamentos', componente: AgendamentosPage }
+    {titulo: 'Agendamentos', componente: AgendamentosPage },
+    {titulo: 'Perfil', componente: PerfilPage}
   ];
 
+  @ViewChild(Nav) public nav: Nav;
+  
   constructor(platform: Platform) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
